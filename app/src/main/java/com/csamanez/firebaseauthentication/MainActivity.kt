@@ -5,10 +5,12 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.firebase.ui.auth.AuthUI
+import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 
@@ -29,6 +31,16 @@ class MainActivity : AppCompatActivity() {
                 if (response == null) {
                     Toast.makeText(this, "See you later...", Toast.LENGTH_SHORT).show()
                     finish() // Finaliza el app
+                } else {
+                    response.error?.let {
+                        if (it.errorCode == ErrorCodes.NO_NETWORK) {
+                            Toast.makeText(this, "Network failed", Toast.LENGTH_SHORT)
+                                .show()
+                        } else {
+                            Toast.makeText(this, "Code error: ${it.errorCode}", Toast.LENGTH_SHORT)
+                                .show()
+                        }
+                    }
                 }
             }
         }
@@ -46,7 +58,9 @@ class MainActivity : AppCompatActivity() {
         authStateListener = FirebaseAuth.AuthStateListener { auth ->
             if (auth.currentUser != null) {
                 supportActionBar?.title = auth.currentUser?.displayName
-                findViewById<TextView>(R.id.tvInit).visibility = View.VISIBLE
+                findViewById<TextView>(R.id.tv_init).visibility = View.VISIBLE
+                findViewById<LinearLayout>(R.id.ll_progress).visibility = View.GONE
+                findViewById<TextView>(R.id.tv_init).visibility = View.VISIBLE
             } else {
                 // Provider Google Authentication
                 // Apertura una UI generica para la bd del proyecto
@@ -59,6 +73,7 @@ class MainActivity : AppCompatActivity() {
                     AuthUI.getInstance()
                         .createSignInIntentBuilder()
                         .setAvailableProviders(providers)
+                        .setIsSmartLockEnabled(false) // Desactivar automcompletado de email
                         .build()
                 )
             }
@@ -90,7 +105,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
-                            findViewById<TextView>(R.id.tvInit).visibility = View.GONE
+                            findViewById<TextView>(R.id.tv_init).visibility = View.GONE
+                            findViewById<LinearLayout>(R.id.ll_progress).visibility = View.VISIBLE
                         } else {
                             Toast.makeText(this, "No se pudo cerrar la sesión", Toast.LENGTH_SHORT)
                                 .show()
