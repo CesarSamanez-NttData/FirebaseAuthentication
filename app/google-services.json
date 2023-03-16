@@ -1,0 +1,98 @@
+{
+  "project_info": {
+    "project_number": "27635621104",
+    "firebase_url": "https://fir-kotlinudemy-default-rtdb.firebaseio.com",
+    "project_id": "fir-kotlinudemy",
+    "storage_bucket": "fir-kotlinudemy.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27635621104:android:862fe4987e2e4edd78f635",
+        "android_client_info": {
+          "package_name": "com.csamanez.firebaseauthentication"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "27635621104-osnapkf7mli5b7ss13pgutajltgaub07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd1qJTRVVsl7nXEtmBiyRRRJ5iYRXyV-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27635621104-osnapkf7mli5b7ss13pgutajltgaub07.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27635621104:android:aa414b12dbf33a1278f635",
+        "android_client_info": {
+          "package_name": "com.csamanez.firebaserealtimedatabase"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "27635621104-osnapkf7mli5b7ss13pgutajltgaub07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd1qJTRVVsl7nXEtmBiyRRRJ5iYRXyV-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27635621104-osnapkf7mli5b7ss13pgutajltgaub07.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:27635621104:android:52354fa12b3f621178f635",
+        "android_client_info": {
+          "package_name": "com.csamanezj.firebasekotlinudemy"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "27635621104-osnapkf7mli5b7ss13pgutajltgaub07.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBd1qJTRVVsl7nXEtmBiyRRRJ5iYRXyV-E"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "27635621104-osnapkf7mli5b7ss13pgutajltgaub07.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
