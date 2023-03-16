@@ -4,6 +4,8 @@ import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
+import android.view.View
+import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
 import com.firebase.ui.auth.AuthUI
@@ -23,6 +25,11 @@ class MainActivity : AppCompatActivity() {
                 if (user != null) {
                     Toast.makeText(this, "Welcome...", Toast.LENGTH_SHORT).show()
                 }
+            } else {
+                if (response == null) {
+                    Toast.makeText(this, "See you later...", Toast.LENGTH_SHORT).show()
+                    finish() // Finaliza el app
+                }
             }
         }
 
@@ -39,10 +46,14 @@ class MainActivity : AppCompatActivity() {
         authStateListener = FirebaseAuth.AuthStateListener { auth ->
             if (auth.currentUser != null) {
                 supportActionBar?.title = auth.currentUser?.displayName
+                findViewById<TextView>(R.id.tvInit).visibility = View.VISIBLE
             } else {
                 // Provider Google Authentication
                 // Apertura una UI generica para la bd del proyecto
-                val providers = arrayListOf(AuthUI.IdpConfig.EmailBuilder().build())
+                val providers = arrayListOf(
+                    AuthUI.IdpConfig.EmailBuilder().build(),
+                    AuthUI.IdpConfig.GoogleBuilder().build()
+                )
 
                 resultLauncher.launch(
                     AuthUI.getInstance()
@@ -76,6 +87,14 @@ class MainActivity : AppCompatActivity() {
                     .addOnSuccessListener {
                         Toast.makeText(this, "Sign out successful..", Toast.LENGTH_SHORT)
                             .show()
+                    }
+                    .addOnCompleteListener {
+                        if (it.isSuccessful) {
+                            findViewById<TextView>(R.id.tvInit).visibility = View.GONE
+                        } else {
+                            Toast.makeText(this, "No se pudo cerrar la sesión", Toast.LENGTH_SHORT)
+                                .show()
+                        }
                     }
             }
         }
