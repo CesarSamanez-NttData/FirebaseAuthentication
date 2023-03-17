@@ -5,19 +5,24 @@ import android.os.Bundle
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
-import android.widget.LinearLayout
-import android.widget.TextView
 import android.widget.Toast
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.recyclerview.widget.GridLayoutManager
+import com.csamanez.firebaseauthentication.databinding.ActivityMainBinding
 import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
 
-class MainActivity : AppCompatActivity() {
+class MainActivity : AppCompatActivity(), OnProductListener {
+
+    private lateinit var binding: ActivityMainBinding
 
     private lateinit var firebaseAuth: FirebaseAuth
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
+
+    private lateinit var adapter: ProductAdapter
+
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
             val response = IdpResponse.fromResultIntent(it.data)
@@ -45,12 +50,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
 
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        setContentView(R.layout.activity_main)
+        binding = ActivityMainBinding.inflate(layoutInflater)
+        setContentView(binding.root)
 
         configAuth()
-
+        configRecyclerView()
     }
 
     private fun configAuth() {
@@ -58,9 +65,9 @@ class MainActivity : AppCompatActivity() {
         authStateListener = FirebaseAuth.AuthStateListener { auth ->
             if (auth.currentUser != null) {
                 supportActionBar?.title = auth.currentUser?.displayName
-                findViewById<TextView>(R.id.tv_init).visibility = View.VISIBLE
-                findViewById<LinearLayout>(R.id.ll_progress).visibility = View.GONE
-                findViewById<TextView>(R.id.tv_init).visibility = View.VISIBLE
+                binding.nsvProducts.visibility = View.VISIBLE
+                binding.llProgress.visibility = View.GONE
+                // findViewById<TextView>(R.id.tv_init).visibility = View.VISIBLE
             } else {
                 // Provider Google Authentication
                 // Apertura una UI generica para la bd del proyecto
@@ -90,6 +97,31 @@ class MainActivity : AppCompatActivity() {
         firebaseAuth.removeAuthStateListener(authStateListener)
     }
 
+    private fun configRecyclerView() {
+        adapter = ProductAdapter(mutableListOf(), this)
+        binding.recyclerView.apply {
+            layoutManager = GridLayoutManager(
+                this@MainActivity,
+                3,
+                GridLayoutManager.HORIZONTAL,
+                false
+            )
+            adapter = this@MainActivity.adapter
+        }
+
+        (1..20).forEach {
+            val product = Product(
+                it.toString(),
+                "Product $it",
+                "Description of product $it",
+                "",
+                it,
+                it * 1.1
+            )
+            adapter.add(product)
+        }
+    }
+
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
         menuInflater.inflate(R.menu.menu_main, menu)
         return super.onCreateOptionsMenu(menu)
@@ -105,8 +137,8 @@ class MainActivity : AppCompatActivity() {
                     }
                     .addOnCompleteListener {
                         if (it.isSuccessful) {
-                            findViewById<TextView>(R.id.tv_init).visibility = View.GONE
-                            findViewById<LinearLayout>(R.id.ll_progress).visibility = View.VISIBLE
+                            binding.nsvProducts.visibility = View.GONE
+                            binding.llProgress.visibility = View.VISIBLE
                         } else {
                             Toast.makeText(this, "No se pudo cerrar la sesión", Toast.LENGTH_SHORT)
                                 .show()
@@ -115,6 +147,14 @@ class MainActivity : AppCompatActivity() {
             }
         }
         return super.onOptionsItemSelected(item)
+    }
+
+    override fun onClick(product: Product) {
+
+    }
+
+    override fun onLongClick(product: Product) {
+
     }
 
 }

@@ -6,24 +6,29 @@
     android:layout_height="match_parent"
     tools:context=".MainActivity">
 
-    <TextView
-        android:id="@+id/tv_init"
+    <androidx.core.widget.NestedScrollView
+        android:id="@+id/nsvProducts"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:background="@color/black"
-        android:gravity="center"
-        android:text="Hello World!"
-        android:textColor="@color/white"
+        android:orientation="horizontal"
         android:visibility="gone"
-        app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toEndOf="parent"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toTopOf="parent" />
+        tools:visibility="visible">
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            tools:listitem="@layout/item_product" />
+
+    </androidx.core.widget.NestedScrollView>
 
     <LinearLayout
-        android:id="@+id/ll_progress"
+        android:id="@+id/llProgress"
         android:layout_width="0dp"
         android:layout_height="0dp"
+        android:gravity="center"
         android:orientation="vertical"
         android:visibility="visible"
         app:layout_constraintBottom_toBottomOf="parent"
@@ -38,8 +43,21 @@
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Preparing everything..." />
+            android:text="@string/product_message_loading" />
 
     </LinearLayout>
+
+    <com.google.android.material.floatingactionbutton.ExtendedFloatingActionButton
+        android:id="@+id/efab"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginEnd="@dimen/commom_padding_default"
+        android:layout_marginBottom="@dimen/commom_padding_default"
+        android:text="@string/product_create"
+        android:visibility="gone"
+        app:icon="@drawable/ic_add_circle_outline"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toEndOf="parent"
+        tools:visibility="visible" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>

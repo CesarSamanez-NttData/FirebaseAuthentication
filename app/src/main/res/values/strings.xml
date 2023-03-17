@@ -1,3 +1,5 @@
 <resources>
-    <string name="app_name">FirebaseAuthentication</string>
+    <string name="app_name">NiloProductStore</string>
+    <string name="product_create">Create</string>
+    <string name="product_message_loading">Preparing everything...</string>
 </resources>
