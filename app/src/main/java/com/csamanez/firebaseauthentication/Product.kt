@@ -1,12 +1,14 @@
 package com.csamanez.firebaseauthentication
 
+import com.google.firebase.firestore.Exclude
+
 data class Product(
-    var id: String?,
-    var name: String?,
-    val description: String?,
-    val imgUrl: String?,
-    val quantity: Int = 0,
-    val price: Double = 0.0
+    @get:Exclude var id: String? = null,
+    var name: String? = null,
+    var description: String? = null,
+    var imgUrl: String? = null,
+    var quantity: Int = 0,
+    var price: Double = 0.0
 ) {
     override fun equals(other: Any?): Boolean {
         if (this === other) return true

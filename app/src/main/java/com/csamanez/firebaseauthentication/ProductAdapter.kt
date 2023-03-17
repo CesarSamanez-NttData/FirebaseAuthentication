@@ -37,9 +37,26 @@ class ProductAdapter(
         if (!productList.contains(product)) {
             productList.add(product)
             notifyItemInserted(productList.size - 1)
+        } else {
+            update(product)
         }
     }
 
+    fun update(product: Product) {
+        val index = productList.indexOf(product)
+        if (index != -1) {
+            productList.set(index, product)
+            notifyItemChanged(index)
+        }
+    }
+
+    fun delete(product: Product) {
+        val index = productList.indexOf(product)
+        if (index != -1) {
+            productList.removeAt(index)
+            notifyItemChanged(index)
+        }
+    }
 
     inner class ViewHolder(view: View) : RecyclerView.ViewHolder(view) {
         val binding = ItemProductBinding.bind(view)

@@ -2,4 +2,8 @@
     <string name="app_name">NiloProductStore</string>
     <string name="product_create">Create</string>
     <string name="product_message_loading">Preparing everything...</string>
+    <string name="hint_name">Name of product</string>
+    <string name="hint_description">Description</string>
+    <string name="hint_quantity">Quantity</string>
+    <string name="hint_price">Price</string>
 </resources>

@@ -13,8 +13,11 @@ import com.firebase.ui.auth.AuthUI
 import com.firebase.ui.auth.ErrorCodes
 import com.firebase.ui.auth.IdpResponse
 import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.firestore.DocumentChange
+import com.google.firebase.firestore.FirebaseFirestore
+import com.google.firebase.firestore.ListenerRegistration
 
-class MainActivity : AppCompatActivity(), OnProductListener {
+class MainActivity : AppCompatActivity(), OnProductListener, MainAux {
 
     private lateinit var binding: ActivityMainBinding
 
@@ -22,6 +25,10 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     private lateinit var authStateListener: FirebaseAuth.AuthStateListener
 
     private lateinit var adapter: ProductAdapter
+
+    private lateinit var firestoreListener: ListenerRegistration
+
+    private var productSelected: Product? = null
 
     private val resultLauncher =
         registerForActivityResult(ActivityResultContracts.StartActivityForResult()) {
@@ -58,6 +65,9 @@ class MainActivity : AppCompatActivity(), OnProductListener {
 
         configAuth()
         configRecyclerView()
+        // configFirestore() // carga el listado pero solo una consulta
+        // configFirestoreRealtime() // carga el listado en tiempo real
+        configButtons()
     }
 
     private fun configAuth() {
@@ -67,7 +77,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                 supportActionBar?.title = auth.currentUser?.displayName
                 binding.nsvProducts.visibility = View.VISIBLE
                 binding.llProgress.visibility = View.GONE
-                // findViewById<TextView>(R.id.tv_init).visibility = View.VISIBLE
+                binding.efab.show()
             } else {
                 // Provider Google Authentication
                 // Apertura una UI generica para la bd del proyecto
@@ -90,11 +100,13 @@ class MainActivity : AppCompatActivity(), OnProductListener {
     override fun onResume() {
         super.onResume()
         firebaseAuth.addAuthStateListener(authStateListener)
+        configFirestoreRealtime()
     }
 
     override fun onPause() {
         super.onPause()
         firebaseAuth.removeAuthStateListener(authStateListener)
+        firestoreListener.remove()
     }
 
     private fun configRecyclerView() {
@@ -109,6 +121,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
             adapter = this@MainActivity.adapter
         }
 
+        /*
         (1..20).forEach {
             val product = Product(
                 it.toString(),
@@ -120,6 +133,8 @@ class MainActivity : AppCompatActivity(), OnProductListener {
             )
             adapter.add(product)
         }
+        */
+
     }
 
     override fun onCreateOptionsMenu(menu: Menu?): Boolean {
@@ -139,6 +154,7 @@ class MainActivity : AppCompatActivity(), OnProductListener {
                         if (it.isSuccessful) {
                             binding.nsvProducts.visibility = View.GONE
                             binding.llProgress.visibility = View.VISIBLE
+                            binding.efab.hide()
                         } else {
                             Toast.makeText(this, "No se pudo cerrar la sesión", Toast.LENGTH_SHORT)
                                 .show()
@@ -149,12 +165,77 @@ class MainActivity : AppCompatActivity(), OnProductListener {
         return super.onOptionsItemSelected(item)
     }
 
+    private fun configFirestore() {
+        val db = FirebaseFirestore.getInstance()
+
+        db.collection(Constants.COLLECTION)
+            .get()
+            .addOnSuccessListener { snapshots ->
+                for (document in snapshots) {
+                    val products = document.toObject(Product::class.java)
+                    products.id = document.id
+                    adapter.add(products)
+                }
+            }
+            .addOnFailureListener {
+                Toast.makeText(this, "Error querying data...", Toast.LENGTH_SHORT).show()
+            }
+    }
+
+    private fun configFirestoreRealtime() {
+        val db = FirebaseFirestore.getInstance()
+        val productRef = db.collection(Constants.COLLECTION)
+
+        firestoreListener = productRef.addSnapshotListener { snapshots, error ->
+            if (error != null) {
+                Toast.makeText(this, "Error querying data...", Toast.LENGTH_SHORT).show()
+                return@addSnapshotListener
+            }
+
+            for (snapshot in snapshots!!.documentChanges) {
+                val product = snapshot.document.toObject(Product::class.java)
+                product.id = snapshot.document.id
+
+                when (snapshot.type) {
+                    DocumentChange.Type.ADDED -> adapter.add(product)
+                    DocumentChange.Type.MODIFIED -> adapter.update(product)
+                    DocumentChange.Type.REMOVED -> adapter.delete(product)
+                }
+            }
+        }
+    }
+
+    private fun configButtons() {
+        binding.efab.setOnClickListener {
+            productSelected = null
+            AddDialogFragment().show(
+                supportFragmentManager,
+                AddDialogFragment::class.java.simpleName
+            )
+        }
+    }
+
     override fun onClick(product: Product) {
+        productSelected = product
+        AddDialogFragment().show(
+            supportFragmentManager,
+            AddDialogFragment::class.java.simpleName
+        )
 
     }
 
     override fun onLongClick(product: Product) {
-
+        val db = FirebaseFirestore.getInstance()
+        val productRef = db.collection(Constants.COLLECTION)
+        product.id?.let { id ->
+            productRef.document(id)
+                .delete()
+                .addOnFailureListener {
+                    Toast.makeText(this, "Error deleting record...", Toast.LENGTH_SHORT).show()
+                }
+        }
     }
+
+    override fun getProductSelected(): Product? = productSelected
 
 }
