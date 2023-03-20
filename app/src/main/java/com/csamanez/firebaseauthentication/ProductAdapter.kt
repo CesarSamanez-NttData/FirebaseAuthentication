@@ -5,6 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
+import com.bumptech.glide.load.engine.DiskCacheStrategy
 import com.csamanez.firebaseauthentication.databinding.ItemProductBinding
 
 class ProductAdapter(
@@ -29,6 +31,14 @@ class ProductAdapter(
         holder.binding.tvName.text = product.name
         holder.binding.tvPrice.text = product.price.toString()
         holder.binding.tvQuantity.text = product.quantity.toString()
+
+        Glide.with(context)
+            .load(product.imgUrl)
+            .diskCacheStrategy(DiskCacheStrategy.ALL)
+            .placeholder(R.drawable.ic_access_time)
+            .error(R.drawable.ic_broken_image)
+            .centerCrop()
+            .into(holder.binding.imgProduct)
     }
 
     override fun getItemCount(): Int = productList.size
